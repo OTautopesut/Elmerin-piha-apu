@@ -70,7 +70,7 @@ nav a:hover{color:var(--green)}
 .tick{list-style:none;padding:0;margin:10px 0 0;color:var(--muted)}
 .tick li{padding:2px 0}
 .tick li::before,.checks li::before{content:"✓ ";color:var(--green);font-weight:800}
-.note{margin:26px auto 0;max-width:640px;font-weight:700;color:var(--green)}
+.note{display:inline-block;margin:30px auto 0;max-width:100%;font:800 clamp(20px,4.2vw,30px)/1.25 Georgia,serif;color:#1d2a1f;background:var(--accent);padding:16px 28px;border-radius:16px;box-shadow:0 6px 18px rgba(40,60,30,.2)}
 .services{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));max-width:760px;margin-inline:auto}
 
 /* Ennen ja jälkeen */
@@ -206,7 +206,7 @@ section{padding:48px 0}.wrap{padding:0 16px}
 <div class="card"><div class="ic">🌱</div><h3>Nurmikonleikkuu</h3><p>Sisältää nurmikonleikkuun ja trimmeröinnin.</p></div>
 <div class="card"><div class="ic">🌿</div><h3>Pensasaidanleikkuu</h3><p>Sisältää leikkuun ja roskien siivouksen.</p></div>
 </div>
-<p class="note">Palvelut oikeuttavat kotitalousvähennykseen.</p>
+<p class="note">💶 Palvelut oikeuttavat kotitalousvähennykseen!</p>
 </div></section>
 
 <section class="alt" id="galleria"><div class="wrap center">
@@ -226,7 +226,7 @@ section{padding:48px 0}.wrap{padding:0 16px}
 
 <section id="varaa"><div class="wrap center">
 <h2>📅 Varaa aika</h2>
-<p class="ask">Kerro, mitä tarvitset. Elmeri vahvistaa ajan ja kertoo hinnan.</p>
+<p class="ask">Kerro, mitä tarvitset. Vahvistan ajan ja kerron hinnan.</p>
 <p class="sub">Vastaan 24 tunnin sisällä. Palvelut oikeuttavat kotitalousvähennykseen.</p>
 <div class="steps"><span><b>1</b>Täytä lomake</span><span><b>2</b>Saat vahvistuksen ja hinnan</span><span><b>3</b>Työ tehdään</span></div>
 <form class="bform" id="bform" novalidate>
@@ -240,7 +240,7 @@ section{padding:48px 0}.wrap{padding:0 16px}
 <label>Lisätietoja (esim. pihan koko, pensasaidan pituus)<textarea name="viesti" rows="4" placeholder="Kirjoita viestisi tähän..."></textarea></label>
 <button type="submit" class="btn" id="bsend">Lähetä varauspyyntö</button>
 <p class="bmsg" id="bmsg" role="status" aria-live="polite"></p>
-<p class="bnote">Lomake on varauspyyntö, ei vielä vahvistettu aika. Elmeri ottaa yhteyttä ja sopii ajan kanssasi.</p>
+<p class="bnote">Lomake on varauspyyntö, ei vielä vahvistettu aika. Otan yhteyttä ja sovin ajan kanssasi.</p>
 </form>
 <p class="small3">Haluatko mieluummin soittaa tai kirjoittaa?</p>
 <div class="cta" id="cta"></div>
@@ -250,7 +250,7 @@ section{padding:48px 0}.wrap{padding:0 16px}
 <div>
 <div class="eyebrow">Kuka olen ja yritykseni</div>
 <h2>Moi, olen Elmeri</h2>
-<p>Olen 17-vuotias tamperelainen 4H-yrittäjä. Elmerin Piha-apu on vuonna 2022 perustettu 4H-yritys, joka tarjoaa pihapalveluja. Leikkaan ruohon ja hoidan pensasleikkuut.</p>
+<p>Olen 17-vuotias tamperelainen 4H-yrittäjä. Elmerin Piha-apu on vuonna 2022 perustamani 4H-yritys, joka tarjoaa pihapalveluja. Leikkaan ruohon ja hoidan pensasleikkuut.</p>
 <ul class="checks"><li>Nurmikonleikkuu</li><li>Pensasleikkuu</li><li>Ajallaan paikalla</li><li>Kotitalousvähennys</li></ul>
 <p style="margin-top:22px"><a class="btn" href="#varaa">Varaa aika</a><small class="cap">Paina tästä ja varaa aika</small></p>
 </div>
