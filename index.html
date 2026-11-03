@@ -140,6 +140,19 @@ nav a:hover{color:var(--green)}
 footer{background:#0a1a0e;color:#b8c7ba;padding:34px 0 calc(34px + env(safe-area-inset-bottom,0px));text-align:center;font-size:14px}
 footer .logoimg{height:36px;margin:0 auto 12px}
 
+
+/* Varauslomake */
+.bform{max-width:560px;margin:28px auto 0;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 6px 18px rgba(40,60,30,.08);display:grid;gap:16px}
+.bform label{display:grid;gap:6px;font-weight:600;font-size:15px;color:var(--text)}
+.bform input,.bform select,.bform textarea{font:inherit;font-weight:400;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:100%}
+.bform input:focus,.bform select:focus,.bform textarea:focus{outline:2px solid var(--green);border-color:var(--green)}
+.bform .btn{width:100%;font-size:18px}
+.bform .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.bmsg{margin:0;font-weight:700;min-height:1.2em}.bmsg.ok{color:var(--green)}.bmsg.err{color:#b3261e}
+.bnote{margin:0;font-size:13px;color:var(--muted)}
+.bform .invalid{border-color:#b3261e}
+@media(max-width:560px){.bform{padding:20px 16px}}
+
 /* Tablet ja puhelin */
 @media(max-width:760px){
 nav{display:none}
@@ -244,10 +257,22 @@ section{padding:48px 0}.wrap{padding:0 16px}
 <section id="varaa"><div class="wrap center">
 <div class="eyebrow">Ajanvaraus</div>
 <h2>Varaa aika</h2>
-<div class="vello" id="vello-varaus">
-<!-- VELLO-VARAUSOSIO TÄHÄN: liitä Vellon upotuskoodi tähän elementtiin ja poista alla oleva paikkamerkki -->
-<div class="vello-ph">📅 Ajanvaraus avautuu tähän pian.</div>
-</div></div></section>
+<p class="sub">Täytä lomake, niin Elmeri vahvistaa ajan sinulle 24 tunnin sisällä.</p>
+<form class="bform" id="bform" novalidate>
+<input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+<label>Nimi<input type="text" name="nimi" autocomplete="name" required></label>
+<label>Sähköposti<input type="email" name="email" autocomplete="email" required></label>
+<label>Puhelin<input type="tel" name="puhelin" autocomplete="tel" required></label>
+<label>Osoite<input type="text" name="osoite" autocomplete="street-address" required></label>
+<label>Palvelu<select name="palvelu" required><option value="">Valitse palvelu</option><option>Nurmikonleikkuu</option><option>Pensasaidanleikkuu</option><option>Nurmikon- ja pensasaidanleikkuu</option></select></label>
+<label>Toivottu päivä<input type="date" name="paiva" id="bdate"></label>
+<label>Lisätietoja (esim. pihan koko, pensasaidan pituus)<textarea name="viesti" rows="4" placeholder="Kirjoita viestisi tähän..."></textarea></label>
+<label>Alennuskoodi (uusille asiakkaille)<input type="text" name="koodi" id="bcode" placeholder="UUSI10" autocapitalize="characters"></label>
+<button type="submit" class="btn" id="bsend">Lähetä varauspyyntö</button>
+<p class="bmsg" id="bmsg" role="status" aria-live="polite"></p>
+<p class="bnote">Lomake on varauspyyntö, ei vielä vahvistettu aika. Elmeri ottaa yhteyttä ja sopii ajan kanssasi.</p>
+</form>
+</div></section>
 
 <section class="alt" id="tietoa"><div class="wrap about">
 <div>
@@ -289,7 +314,7 @@ Copyright © 2026. Kaikki oikeudet pidätetään.</div></footer>
 /* ===== Muokattavat tiedot ===== */
 /* Yhteystiedot: täytä puhelin ja/tai sähköposti. Napit ja yläpalkin "Soita"-nappi (mobiili) ilmestyvät automaattisesti.
    Esim. phone:'040 123 4567', email:'nimi@esimerkki.fi' */
-var CONTACT={phone:'',email:''};
+var CONTACT={phone:'0442306630',email:'elmeri.makinen@hotmail.com'};
 var PAIRS=[
 {t:'Pensasleikkuu: tuijat',b:'images/pensas-tuija-ennen.webp',a:'images/pensas-tuija-jalkeen.webp',w:540,h:720},
 {t:'Pensasleikkuu: pihan pensas',b:'images/pensas-piha-ennen.webp',a:'images/pensas-piha-jalkeen.webp',w:540,h:720},
@@ -331,10 +356,35 @@ function openPop(){if(seen()||!pop.hidden)return;mark();pop.hidden=false;documen
 function closePop(){pop.hidden=true;document.body.style.overflow=''}
 function onScroll(){if(window.scrollY>400){openPop();window.removeEventListener('scroll',onScroll)}}
 if(!seen()){setTimeout(openPop,5500);window.addEventListener('scroll',onScroll,{passive:true})}
-$('#popYes').onclick=function(){closePop();newC=true;$('#newc').hidden=false;renderContact();$('#hinnasto').scrollIntoView({behavior:'smooth'})};
+$('#popYes').onclick=function(){closePop();newC=true;var bc=$('#bcode');if(bc)bc.value=CODE;$('#newc').hidden=false;renderContact();$('#hinnasto').scrollIntoView({behavior:'smooth'})};
 $('#popNo').onclick=closePop;$('#popX').onclick=closePop;
 pop.addEventListener('click',function(e){if(e.target===pop)closePop()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!pop.hidden)closePop()});
+
+
+/* Varauslomake: lähetys sähköpostiin (FormSubmit). Jos lähetys ei onnistu, avataan sähköpostiohjelma. */
+var bf=$('#bform'),bm=$('#bmsg'),bs=$('#bsend');
+try{var d=new Date();$('#bdate').min=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}catch(e){}
+bf.addEventListener('submit',function(e){
+e.preventDefault();bm.className='bmsg';bm.textContent='';
+var f=bf.elements,bad=false;
+['nimi','email','puhelin','osoite','palvelu'].forEach(function(n){var ok=f[n].value.trim()&&(n!=='email'||/^\S+@\S+\.\S+$/.test(f[n].value.trim()));f[n].classList.toggle('invalid',!ok);if(!ok)bad=true});
+if(bad){bm.className='bmsg err';bm.textContent='Täytä pakolliset kentät: nimi, sähköposti, puhelin, osoite ja palvelu.';return}
+if(f._honey.value)return;
+var data={_subject:'Uusi varauspyyntö: '+f.palvelu.value+' ('+f.nimi.value.trim()+')',_template:'table',_captcha:'false',
+Nimi:f.nimi.value.trim(),email:f.email.value.trim(),Puhelin:f.puhelin.value.trim(),Osoite:f.osoite.value.trim(),Palvelu:f.palvelu.value,
+'Toivottu päivä':f.paiva.value||'-',Lisätietoja:f.viesti.value.trim()||'-',Alennuskoodi:f.koodi.value.trim()||'-'};
+bs.disabled=true;bs.textContent='Lähetetään…';
+function fallback(){
+var b='Nimi: '+data.Nimi+'\nSähköposti: '+data.email+'\nPuhelin: '+data.Puhelin+'\nOsoite: '+data.Osoite+'\nPalvelu: '+data.Palvelu+'\nToivottu päivä: '+data['Toivottu päivä']+'\nLisätietoja: '+data.Lisätietoja+'\nAlennuskoodi: '+data.Alennuskoodi;
+bm.className='bmsg err';bm.textContent='Lähetys ei onnistunut. Avataan sähköpostiohjelma, lähetä viesti sieltä.';
+window.location.href='mailto:'+CONTACT.email+'?subject='+encodeURIComponent(data._subject)+'&body='+encodeURIComponent(b)}
+fetch('https://formsubmit.co/ajax/'+CONTACT.email,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
+.then(function(r){return r.json()}).then(function(j){
+if(j&&(j.success===true||j.success==='true')){bf.reset();bm.className='bmsg ok';bm.textContent='Kiitos! Varauspyyntö lähetetty. Elmeri ottaa sinuun yhteyttä 24 tunnin sisällä.'}else fallback()})
+.catch(fallback).then(function(){bs.disabled=false;bs.textContent='Lähetä varauspyyntö'});
+});
+/* Alennuskoodi esitäytetään, jos asiakas valitsi ikkunassa uuden asiakkaan edun */
 
 /* Kelluva nappi piiloon tietyissä osioissa */
 var fab=$('#fab'),hid={etusivu:true};
