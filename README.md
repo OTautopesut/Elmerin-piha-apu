@@ -8,7 +8,7 @@ Yhden sivun staattinen sivusto (ei build-vaihetta). Julkaisu GitHub Pagesissa: S
 - **REVIEWS** – asiakaspalautteet.
 
 ## Varauslomake
-Osio `#varaa` on varauspyyntölomake (nimi, sähköposti, puhelin, osoite, palvelu, toivottu päivä, lisätietoja). Hinta kerrotaan varauksen vahvistuksen yhteydessä.
+Osio `#varaa` on varauspyyntölomake (nimi, sähköposti, puhelin, osoite, palvelu, lisätietoja). Hinta kerrotaan varauksen vahvistuksen yhteydessä.
 - **Ilman avainta** (`FORM_KEY=''`) lomake avaa asiakkaan sähköpostiohjelman valmiiksi täytetyllä viestillä osoitteeseen `CONTACT.email`.
 - **Suora lähetys:** hae ilmainen avain osoitteesta web3forms.com (anna sähköposti, avain tulee viestinä) ja liitä se `FORM_KEY`-kohtaan. Silloin varaus tulee suoraan sähköpostiin, ja asiakas näkee kiitosviestin. Jos lähetys epäonnistuu, sivu avaa sähköpostiohjelman.
 
