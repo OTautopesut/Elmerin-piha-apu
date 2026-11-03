@@ -287,6 +287,8 @@ Copyright © 2026. Kaikki oikeudet pidätetään.</div></footer>
 /* Yhteystiedot: täytä puhelin ja/tai sähköposti. Napit ja yläpalkin "Soita"-nappi (mobiili) ilmestyvät automaattisesti.
    Esim. phone:'040 123 4567', email:'nimi@esimerkki.fi' */
 var CONTACT={phone:'0442306630',email:'elmeri.makinen@hotmail.com'};
+/* Varauslomake: liitä tähän Web3Forms-avain (web3forms.com → anna sähköposti → avain tulee sähköpostiin). Ilman avainta lomake avaa asiakkaan sähköpostiohjelman valmiiksi täytetyllä viestillä. */
+var FORM_KEY='';
 var PAIRS=[
 {t:'Pensasleikkuu: tuijat',b:'images/pensas-tuija-ennen.webp',a:'images/pensas-tuija-jalkeen.webp',w:540,h:720},
 {t:'Pensasleikkuu: pihan pensas',b:'images/pensas-piha-ennen.webp',a:'images/pensas-piha-jalkeen.webp',w:540,h:720},
@@ -318,7 +320,7 @@ var mb=$('#menu'),mn=$('#mainnav');
 mb.onclick=function(){var o=mn.classList.toggle('open');mb.setAttribute('aria-expanded',o)};
 mn.addEventListener('click',function(e){if(e.target.tagName==='A'){mn.classList.remove('open');mb.setAttribute('aria-expanded','false')}});
 
-/* Varauslomake: lähetys sähköpostiin (FormSubmit). Jos lähetys ei onnistu, avataan sähköpostiohjelma. */
+/* Varauslomake: lähetys sähköpostiin (Web3Forms). Jos avainta ei ole tai lähetys ei onnistu, avataan sähköpostiohjelma. */
 var bf=$('#bform'),bm=$('#bmsg'),bs=$('#bsend');
 try{var d=new Date();$('#bdate').min=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}catch(e){}
 bf.addEventListener('submit',function(e){
@@ -330,15 +332,16 @@ if(f._honey.value)return;
 var data={_subject:'Uusi varauspyyntö: '+f.palvelu.value+' ('+f.nimi.value.trim()+')',_template:'table',_captcha:'false',
 Nimi:f.nimi.value.trim(),email:f.email.value.trim(),Puhelin:f.puhelin.value.trim(),Osoite:f.osoite.value.trim(),Palvelu:f.palvelu.value,
 'Toivottu päivä':f.paiva.value||'-',Lisätietoja:f.viesti.value.trim()||'-'};
-bs.disabled=true;bs.textContent='Lähetetään…';
-function fallback(){
+function mail(note){
 var b='Nimi: '+data.Nimi+'\nSähköposti: '+data.email+'\nPuhelin: '+data.Puhelin+'\nOsoite: '+data.Osoite+'\nPalvelu: '+data.Palvelu+'\nToivottu päivä: '+data['Toivottu päivä']+'\nLisätietoja: '+data.Lisätietoja;
-bm.className='bmsg err';bm.textContent='Lähetys ei onnistunut. Avataan sähköpostiohjelma, lähetä viesti sieltä.';
+bm.className='bmsg'+(note?' err':'');bm.textContent=note||'Avataan sähköpostiohjelma, jossa viesti on valmiina. Paina siellä Lähetä.';
 window.location.href='mailto:'+CONTACT.email+'?subject='+encodeURIComponent(data._subject)+'&body='+encodeURIComponent(b)}
-fetch('https://formsubmit.co/ajax/'+CONTACT.email,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
+if(!FORM_KEY){mail();return}
+bs.disabled=true;bs.textContent='Lähetetään…';
+fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({access_key:FORM_KEY,subject:data._subject,from_name:data.Nimi,name:data.Nimi,email:data.email,phone:data.Puhelin,address:data.Osoite,service:data.Palvelu,date:data['Toivottu päivä'],message:data.Lisätietoja,botcheck:''})})
 .then(function(r){return r.json()}).then(function(j){
-if(j&&(j.success===true||j.success==='true')){bf.reset();bm.className='bmsg ok';bm.textContent='Kiitos! Varauspyyntö lähetetty. Otan sinuun yhteyttä 24 tunnin sisällä.'}else fallback()})
-.catch(fallback).then(function(){bs.disabled=false;bs.textContent='Lähetä varauspyyntö'});
+if(j&&j.success){bf.reset();bm.className='bmsg ok';bm.textContent='Kiitos! Varauspyyntö lähetetty. Otan sinuun yhteyttä 24 tunnin sisällä.'}else mail('Lähetys ei onnistunut. Avataan sähköpostiohjelma, lähetä viesti sieltä.')})
+.catch(function(){mail('Lähetys ei onnistunut. Avataan sähköpostiohjelma, lähetä viesti sieltä.')}).then(function(){bs.disabled=false;bs.textContent='Lähetä varauspyyntö'});
 });
 
 /* Kelluva nappi piiloon tietyissä osioissa */

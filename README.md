@@ -8,7 +8,9 @@ Yhden sivun staattinen sivusto (ei build-vaihetta). Julkaisu GitHub Pagesissa: S
 - **REVIEWS** – asiakaspalautteet.
 
 ## Varauslomake
-Osio `#varaa` on varauspyyntölomake (nimi, sähköposti, puhelin, osoite, palvelu, toivottu päivä, lisätietoja). Hinta kerrotaan varauksen vahvistuksen yhteydessä. Lähetys menee sähköpostiin `CONTACT.email` palvelun FormSubmit (formsubmit.co) kautta. **Ensimmäisellä lähetyksellä FormSubmit lähettää vahvistusviestin tähän sähköpostiin – klikkaa viestin linkkiä kerran, jonka jälkeen lomake toimii.** Tarkista myös roskaposti. Jos lähetys epäonnistuu, sivu avaa sähköpostiohjelman valmiiksi täytetyllä viestillä.
+Osio `#varaa` on varauspyyntölomake (nimi, sähköposti, puhelin, osoite, palvelu, toivottu päivä, lisätietoja). Hinta kerrotaan varauksen vahvistuksen yhteydessä.
+- **Ilman avainta** (`FORM_KEY=''`) lomake avaa asiakkaan sähköpostiohjelman valmiiksi täytetyllä viestillä osoitteeseen `CONTACT.email`.
+- **Suora lähetys:** hae ilmainen avain osoitteesta web3forms.com (anna sähköposti, avain tulee viestinä) ja liitä se `FORM_KEY`-kohtaan. Silloin varaus tulee suoraan sähköpostiin, ja asiakas näkee kiitosviestin. Jos lähetys epäonnistuu, sivu avaa sähköpostiohjelman.
 
 ## Yritystiedot alatunnisteeseen
 Alatunnisteessa on HTML-kommentti, johon voi lisätä Y-tunnuksen / 4H-yhdistyksen tiedot, vakuutuksen ja huoltajan yhteystiedon, kun ne on vahvistettu.
