@@ -229,7 +229,7 @@ section{padding:48px 0}.wrap{padding:0 16px}
 <p class="ask">Kerro, mitä tarvitset. Vahvistan ajan ja kerron hinnan.</p>
 <p class="sub">Vastaan 24 tunnin sisällä. Palvelut oikeuttavat kotitalousvähennykseen.</p>
 <div class="steps"><span><b>1</b>Täytä lomake</span><span><b>2</b>Saat vahvistuksen ja hinnan</span><span><b>3</b>Työ tehdään</span></div>
-<form class="bform" id="bform" novalidate>
+<form class="bform" id="bform" method="post" action="#varaa" novalidate>
 <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
 <label>Nimi<input type="text" name="nimi" autocomplete="name" required></label>
 <label>Sähköposti<input type="email" name="email" autocomplete="email" required></label>
@@ -317,6 +317,29 @@ renderContact();
 var mb=$('#menu'),mn=$('#mainnav');
 mb.onclick=function(){var o=mn.classList.toggle('open');mb.setAttribute('aria-expanded',o)};
 mn.addEventListener('click',function(e){if(e.target.tagName==='A'){mn.classList.remove('open');mb.setAttribute('aria-expanded','false')}});
+
+/* Varauslomake: lähetys sähköpostiin (FormSubmit). Jos lähetys ei onnistu, avataan sähköpostiohjelma. */
+var bf=$('#bform'),bm=$('#bmsg'),bs=$('#bsend');
+try{var d=new Date();$('#bdate').min=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}catch(e){}
+bf.addEventListener('submit',function(e){
+e.preventDefault();bm.className='bmsg';bm.textContent='';
+var f=bf.elements,bad=false;
+['nimi','email','puhelin','osoite','palvelu'].forEach(function(n){var ok=f[n].value.trim()&&(n!=='email'||/^\S+@\S+\.\S+$/.test(f[n].value.trim()));f[n].classList.toggle('invalid',!ok);if(!ok)bad=true});
+if(bad){bm.className='bmsg err';bm.textContent='Täytä pakolliset kentät: nimi, sähköposti, puhelin, osoite ja palvelu.';return}
+if(f._honey.value)return;
+var data={_subject:'Uusi varauspyyntö: '+f.palvelu.value+' ('+f.nimi.value.trim()+')',_template:'table',_captcha:'false',
+Nimi:f.nimi.value.trim(),email:f.email.value.trim(),Puhelin:f.puhelin.value.trim(),Osoite:f.osoite.value.trim(),Palvelu:f.palvelu.value,
+'Toivottu päivä':f.paiva.value||'-',Lisätietoja:f.viesti.value.trim()||'-'};
+bs.disabled=true;bs.textContent='Lähetetään…';
+function fallback(){
+var b='Nimi: '+data.Nimi+'\nSähköposti: '+data.email+'\nPuhelin: '+data.Puhelin+'\nOsoite: '+data.Osoite+'\nPalvelu: '+data.Palvelu+'\nToivottu päivä: '+data['Toivottu päivä']+'\nLisätietoja: '+data.Lisätietoja;
+bm.className='bmsg err';bm.textContent='Lähetys ei onnistunut. Avataan sähköpostiohjelma, lähetä viesti sieltä.';
+window.location.href='mailto:'+CONTACT.email+'?subject='+encodeURIComponent(data._subject)+'&body='+encodeURIComponent(b)}
+fetch('https://formsubmit.co/ajax/'+CONTACT.email,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
+.then(function(r){return r.json()}).then(function(j){
+if(j&&(j.success===true||j.success==='true')){bf.reset();bm.className='bmsg ok';bm.textContent='Kiitos! Varauspyyntö lähetetty. Otan sinuun yhteyttä 24 tunnin sisällä.'}else fallback()})
+.catch(fallback).then(function(){bs.disabled=false;bs.textContent='Lähetä varauspyyntö'});
+});
 
 /* Kelluva nappi piiloon tietyissä osioissa */
 var fab=$('#fab'),hid={etusivu:true};
