@@ -329,7 +329,7 @@ if(bad){bm.className='bmsg err';bm.textContent='Täytä pakolliset kentät: nimi
 if(f._honey.value)return;
 var data={_subject:'Uusi varauspyyntö: '+f.palvelu.value+' ('+f.nimi.value.trim()+')',_template:'table',_captcha:'false',
 Nimi:f.nimi.value.trim(),email:f.email.value.trim(),Puhelin:f.puhelin.value.trim(),Osoite:f.osoite.value.trim(),Palvelu:f.palvelu.value,
-'Toivottu päivä':f.paiva.value||'-',Lisätietoja:f.viesti.value.trim()||'-'};
+Lisätietoja:f.viesti.value.trim()||'-'};
 function mail(note){
 var b='Nimi: '+data.Nimi+'\nSähköposti: '+data.email+'\nPuhelin: '+data.Puhelin+'\nOsoite: '+data.Osoite+'\nPalvelu: '+data.Palvelu+'\nLisätietoja: '+data.Lisätietoja;
 bm.className='bmsg'+(note?' err':'');bm.textContent=note||'Avataan sähköpostiohjelma, jossa viesti on valmiina. Paina siellä Lähetä.';
